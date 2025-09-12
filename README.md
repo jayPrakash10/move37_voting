@@ -21,7 +21,7 @@ A real-time voting/polling system built with Node.js, Express, PostgreSQL, Prism
 
 1. Clone the repository
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/jayPrakash10/move37_voting
    cd voting-system
    ```
 
@@ -31,6 +31,7 @@ A real-time voting/polling system built with Node.js, Express, PostgreSQL, Prism
    ```
 
 3. Configure environment:
+
    Create a .env file by copying the .env.example file and updating the environment variables.
    
    OR
@@ -40,12 +41,12 @@ A real-time voting/polling system built with Node.js, Express, PostgreSQL, Prism
    # Update environment variables in .env
    ```
 
-4. Set up the database:
+5. Set up the database:
    ```bash
    npx prisma migrate dev --name init
    ```
 
-5. Start the development server:
+6. Start the development server:
    ```bash
    npm run dev
    ```
@@ -159,11 +160,6 @@ All error responses follow this format:
   "message": "Descriptive error message"
 }
 ```
-
-## Rate Limiting
-
-- 100 requests per 15 minutes per IP address
-- Authentication endpoints have lower limits to prevent brute force attacks
 
 ## Security
 
