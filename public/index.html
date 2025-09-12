@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voting App - WebSocket Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .panel {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .status {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        button {
+            padding: 8px 15px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        #logs {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <h1>Voting App - WebSocket Demo</h1>
+    
+    <div class="container">
+        <div class="panel">
+            <h2>Connection</h2>
+            <div id="connectionStatus" class="status disconnected">Disconnected</div>
+            <button id="connectBtn">Connect</button>
+            <button id="disconnectBtn" disabled>Disconnect</button>
+            
+            <h3>Simulate Events</h3>
+            <button id="simulateVote">Simulate Vote</button>
+            <button id="simulateNewPoll">Simulate New Poll</button>
+            <button id="simulatePollUpdate">Simulate Poll Update</button>
+        </div>
+        
+        <div class="panel">
+            <h2>Event Logs</h2>
+            <button id="clearLogs">Clear Logs</button>
+            <div id="logs">Connecting to WebSocket server...</div>
+        </div>
+    </div>
+
+    <script>
+        const logs = document.getElementById('logs');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const simulateVoteBtn = document.getElementById('simulateVote');
+        const simulateNewPollBtn = document.getElementById('simulateNewPoll');
+        const simulatePollUpdateBtn = document.getElementById('simulatePollUpdate');
+        const clearLogsBtn = document.getElementById('clearLogs');
+
+        let socket;
+        const serverUrl = `ws://${window.location.hostname}:${window.location.port || 3000}`;
+
+        function log(message) {
+            const timestamp = new Date().toISOString();
+            logs.innerHTML += `[${timestamp}] ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function connect() {
+            log(`Connecting to ${serverUrl}...`);
+            socket = new WebSocket(serverUrl);
+
+            socket.onopen = () => {
+                log('WebSocket connection established');
+                connectionStatus.textContent = 'Connected';
+                connectionStatus.className = 'status connected';
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+            };
+
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                log(`Received ${data.type} event:\n${JSON.stringify(data.data, null, 2)}`);
+            };
+
+            socket.onclose = () => {
+                log('WebSocket connection closed');
+                connectionStatus.textContent = 'Disconnected';
+                connectionStatus.className = 'status disconnected';
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+            };
+
+            socket.onerror = (error) => {
+                log(`WebSocket error: ${error.message}`);
+            };
+        }
+
+        function disconnect() {
+            if (socket) {
+                log('Closing WebSocket connection...');
+                socket.close();
+            }
+        }
+
+        // Event Listeners
+        connectBtn.addEventListener('click', connect);
+        disconnectBtn.addEventListener('click', disconnect);
+
+        clearLogsBtn.addEventListener('click', () => {
+            logs.textContent = '';
+        });
+
+        // Simulate events
+        simulateVoteBtn.addEventListener('click', () => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const voteEvent = {
+                    type: 'VOTE_CAST',
+                    data: {
+                        pollId: 'sample-poll-123',
+                        optionId: 'option-1',
+                        userId: 'user-456',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                socket.send(JSON.stringify(voteEvent));
+                log('Sent simulated vote event');
+            } else {
+                log('Error: Not connected to WebSocket server');
+            }
+        });
+
+        simulateNewPollBtn.addEventListener('click', () => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const newPollEvent = {
+                    type: 'POLL_CREATED',
+                    data: {
+                        id: 'poll-' + Date.now(),
+                        question: 'New Sample Poll',
+                        createdAt: new Date().toISOString()
+                    }
+                };
+                socket.send(JSON.stringify(newPollEvent));
+                log('Sent simulated new poll event');
+            } else {
+                log('Error: Not connected to WebSocket server');
+            }
+        });
+
+        simulatePollUpdateBtn.addEventListener('click', () => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                const updateEvent = {
+                    type: 'POLL_UPDATED',
+                    data: {
+                        id: 'sample-poll-123',
+                        question: 'Updated Sample Poll',
+                        updatedAt: new Date().toISOString()
+                    }
+                };
+                socket.send(JSON.stringify(updateEvent));
+                log('Sent simulated poll update event');
+            } else {
+                log('Error: Not connected to WebSocket server');
+            }
+        });
+
+        // Initial connection
+        connect();
+    </script>
+</body>
+</html>
