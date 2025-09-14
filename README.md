@@ -41,16 +41,17 @@ A real-time voting/polling system built with Node.js, Express, PostgreSQL, Prism
    # Update environment variables in .env
    ```
 
-5. Set up the database:
+4. Set up the database:
    ```bash
    npx prisma migrate dev --name init
    ```
 
-6. Start the development server:
+5. Start the development server:
    ```bash
    npm run dev
    ```
-   The API will be available at `http://localhost:3000`
+   The API will be available at `http://localhost:3000`.
+   
    Open above link in browser to check web-socket logs.
 
 ## Environment Variables
