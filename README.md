@@ -51,6 +51,7 @@ A real-time voting/polling system built with Node.js, Express, PostgreSQL, Prism
    npm run dev
    ```
    The API will be available at `http://localhost:3000`
+   Open above link in browser to check web-socket logs.
 
 ## Environment Variables
 
