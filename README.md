@@ -61,7 +61,7 @@ A real-time voting/polling system built with Node.js, Express, PostgreSQL, Prism
 | `PORT` | Port to run the server | `3000` |
 | `DATABASE_URL` | PostgreSQL connection URL | - |
 | `JWT_SECRET` | Secret for JWT tokens | - |
-| `JWT_EXPIRES_IN` | JWT expiration time | `30d` |
+| `JWT_EXPIRES_IN` | JWT expiration time | `1d` |
 
 ## API Documentation
 
